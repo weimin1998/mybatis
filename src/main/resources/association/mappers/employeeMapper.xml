@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weimin.association.dao.EmployeeDao">
+    <cache
+            eviction="FIFO"
+            flushInterval="60000"
+            readOnly="false"
+            size="1000"
+            >
+    </cache>
+
+    <!--级联属性，封装结果集-->
+   <resultMap id="employeeWithDemp" type="com.weimin.association.pojo.Employee">
+       <id column="id" property="id"/>
+       <result column="ename" property="name"/>
+       <result column="age" property="age"/>
+       <result column="did" property="dept.id"/>
+       <result column="dname" property="dept.name"/>
+   </resultMap>
+
+    <!--association 定义单个对象的封装规则-->
+    <resultMap id="employeeWithDemp1" type="com.weimin.association.pojo.Employee">
+        <id column="id" property="id"/>
+        <result column="ename" property="name"/>
+        <result column="age" property="age"/>
+        <association property="dept" javaType="com.weimin.association.pojo.Department">
+            <id column="did" property="id"/>
+            <result column="dname" property="name"/>
+        </association>
+    </resultMap>
+
+
+
+
+
+
+    <select id="getEmployeeAndDeptById" resultMap="employeeWithDemp1">
+        select e.id id, e.name ename, e.age age, d.id did, d.name dname
+        from employee e join department d
+        on e.dempId = d.id
+        where e.id = #{id}
+    </select>
+
+
+    <resultMap id="step" type="com.weimin.association.pojo.Employee">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="age" property="age"/>
+
+        <!--select表示，dept这个属性是通过select指定的方法查询出来的-->
+        <!--column表示，select指定的查询需要的参数-->
+        <association property="dept"
+                     select="com.weimin.association.dao.DepartmentDao.getById"
+                     column="dempId"
+                     fetchType="eager">
+
+        </association>
+    </resultMap>
+    <!--分步查询-->
+    <select id="getEmployeeAndDeptByIdStep" resultMap="step">
+        select id, name, age, dempId
+        from employee
+        where id = #{id}
+    </select>
+
+
+    <select id="getAll" resultType="com.weimin.association.pojo.Employee">
+        select id, name, age
+        from employee
+    </select>
+</mapper>

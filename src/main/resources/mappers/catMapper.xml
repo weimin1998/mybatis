@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weimin.dao.CatDao">
+
+    <insert id="insertCat" useGeneratedKeys="true" keyProperty="id">
+        insert into cat (cName,cAge,cgender) values(#{name},#{age},#{gender})
+    </insert>
+
+    <select id="getCatById" resultType="com.weimin.pojo.Cat">
+        select * from cat where id = #{id}
+    </select>
+
+<!--    <select id="getCatById" resultMap="r1">-->
+<!--        select * from cat where id = #{id}-->
+<!--    </select>-->
+
+    <resultMap id="r1" type="com.weimin.pojo.Cat">
+        <id property="id" column="id"/>
+        <result property="name" column="cName"/>
+        <result property="age" column="cAge"/>
+        <result property="gender" column="cgender"/>
+    </resultMap>
+</mapper>

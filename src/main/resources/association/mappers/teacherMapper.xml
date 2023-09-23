@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weimin.association.dao.TeacherDao">
+
+    <resultMap id="rm1" type="com.weimin.association.pojo.Teacher">
+        <id column="tid" property="id"/>
+        <result column="tname" property="name"/>
+        <!--ofType 集合中元素的类型-->
+        <collection property="studentList" ofType="com.weimin.association.pojo.Student">
+            <id column="sid" property="id"/>
+            <result column="sname" property="name"/>
+            <result column="tid" property="tid"/>
+        </collection>
+    </resultMap>
+
+    <select id="getById" resultMap="rm1">
+        select t.id tid,t.name tname,s.id sid,s.name sname
+        from teacher t join student s
+        on t.id = s.tid
+        where t.id =#{id}
+    </select>
+
+
+    <!--分步查询-->
+    <resultMap id="rm2" type="com.weimin.association.pojo.Teacher">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="studentList"
+                    select="com.weimin.association.dao.StudentDao.getByTid"
+                    column="{tid=id}"
+                    fetchType="eager">
+        </collection>
+    </resultMap>
+    <select id="getByIdStep" resultMap="rm2">
+        select id ,name
+        from teacher
+        where id = #{id}
+    </select>
+    
+</mapper>
